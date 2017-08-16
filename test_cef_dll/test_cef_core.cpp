@@ -25,6 +25,15 @@
 #include "stdafx.h"
 #include "test_cef_dll.h"
 
+#include "include/cef_base.h"
+#include "include/cef_app.h"
+
+#if defined(_MSC_VER)
+#pragma comment(lib,"libcef.lib")
+#pragma comment(lib,"VS2013/libcef_dll_wrapper.lib")
+#endif // defined(_MSC_VER)
+
+
 #if defined(__cplusplus)
 extern "C" {
 #endif // defined(__cplusplus)
@@ -39,6 +48,8 @@ test_cef_core__init(void)
 BOOL
 test_cef_core__term(void)
 {
+    CefShutdown();
+
     return TRUE;
 }
 
