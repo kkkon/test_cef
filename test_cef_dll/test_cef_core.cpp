@@ -51,7 +51,14 @@ extern "C" HINSTANCE getMyInstance();
 
 struct TestContext
 {
-    CefMainArgs     main_args;
+    CefMainArgs         main_args;
+    CefRefPtr<CefApp>   app;
+    CefSettings         settings;
+
+    void*                   sandbox_info;
+#if defined(CEF_USE_SANDBOX)
+    CefScopedSandboxInfo    scoped_sandbox;
+#endif defined(CEF_USE_SANDBOX)
 };
 
 static
@@ -68,14 +75,6 @@ test_cef_core__init(void)
 {
 #if defined(_WIN32)
     CefEnableHighDPISupport();
-
-    void* sandbox_info = NULL;
-
-#if defined(CEF_USE_SANDBOX)
-    CefScopedSandboxInfo    scoped_sandbox;
-    sandbox_info = scoped_sandbox.sandbox_info();
-#endif // defined(CEF_USE_SANDBOX)
-
 #endif // defined(_WIN32)
 
     s_pContext = new TestContext;
@@ -84,9 +83,42 @@ test_cef_core__init(void)
         return FALSE;
     }
 
+    s_pContext->sandbox_info = NULL;
 #if defined(_WIN32)
+#if defined(CEF_USE_SANDBOX)
+    s_pContext->sandbox_info = s_pContext->scoped_sandbox.sandbox_info();
+#endif // defined(CEF_USE_SANDBOX)
+
     s_pContext->main_args = CefMainArgs(getMyInstance());
 #endif // defined(_WIN32)
+
+
+
+    CefRefPtr<CefCommandLine>   command_line = createCommandLine(s_pContext->main_args);
+    switch ( getProcessType(command_line) )
+    {
+    case enmProcessType_Browser:
+        //s_pContext->app = createAppBrowserProcess();
+        break;
+    case enmProcessType_Renderer:
+        //s_pContext->app = createAppRendererProcess();
+        break;
+    case enmProcessType_Other:
+        //s_pContext->app = createAppOtherProcess();
+        break;
+    }
+
+    const int exit_code = CefExecuteProcess( s_pContext->main_args, s_pContext->app, s_pContext->sandbox_info );
+    if ( 0 <= exit_code )
+    {
+        return FALSE;
+    }
+
+#if !defined(CEF_USE_SANDBOX)
+    s_pContext->settings.no_sandbox = true;
+#endif // !defined(CEF_USE_SANDBOX)
+
+    CefInitialize( s_pContext->main_args, s_pContext->settings, s_pContext->app, s_pContext->sandbox_info);
 
     return TRUE;
 }
