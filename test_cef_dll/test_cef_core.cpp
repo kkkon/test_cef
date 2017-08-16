@@ -23,16 +23,30 @@
  */
 
 #include "stdafx.h"
+#include "test_cef_dll.h"
 
-#include "../test_cef_dll/test_cef_dll.h"
+#if defined(__cplusplus)
+extern "C" {
+#endif // defined(__cplusplus)
 
 
-int _tmain(int argc, _TCHAR* argv[])
+BOOL
+test_cef_core__init(void)
 {
-    test_cef__init();
-
-    test_cef__term();
-
-    return 0;
+    return TRUE;
 }
+
+BOOL
+test_cef_core__term(void)
+{
+    return TRUE;
+}
+
+
+
+
+#if defined(__cplusplus)
+} // extern "C" {
+#endif // defined(__cplusplus)
+
 

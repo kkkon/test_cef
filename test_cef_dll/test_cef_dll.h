@@ -22,6 +22,8 @@
  * THE SOFTWARE.
  */
 
+#pragma once
+
 #ifdef TEST_CEF_DLL_EXPORTS
 #define TEST_CEF_DLL_API __declspec(dllexport)
 #else
@@ -35,6 +37,10 @@ extern "C" {
 BOOL
 TEST_CEF_DLL_API
 test_cef__init(void);
+
+BOOL
+TEST_CEF_DLL_API
+test_cef__term(void);
 
 
 #if defined(__cplusplus)

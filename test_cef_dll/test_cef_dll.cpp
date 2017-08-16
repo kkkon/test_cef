@@ -25,6 +25,8 @@
 #include "stdafx.h"
 #include "test_cef_dll.h"
 
+#include "test_cef_core.h"
+
 #if defined(__cplusplus)
 extern "C" {
 #endif // defined(__cplusplus)
@@ -34,10 +36,30 @@ BOOL
 TEST_CEF_DLL_API
 test_cef__init(void)
 {
-    return TRUE;
+    const bool bRet = test_cef_core__init();
+
+    BOOL result = FALSE;
+    if (bRet)
+    {
+        result = TRUE;
+    }
+    return result;
 }
 
 
+BOOL
+TEST_CEF_DLL_API
+test_cef__term(void)
+{
+    const bool bRet = test_cef_core__term();
+
+    BOOL result = FALSE;
+    if (bRet)
+    {
+        result = TRUE;
+    }
+    return result;
+}
 
 
 

@@ -22,17 +22,20 @@
  * THE SOFTWARE.
  */
 
-#include "stdafx.h"
+#pragma once
 
-#include "../test_cef_dll/test_cef_dll.h"
+#if defined(__cplusplus)
+extern "C" {
+#endif // defined(__cplusplus)
+
+bool
+test_cef_core__init(void);
+
+bool
+test_cef_core__term(void);
 
 
-int _tmain(int argc, _TCHAR* argv[])
-{
-    test_cef__init();
-
-    test_cef__term();
-
-    return 0;
-}
+#if defined(__cplusplus)
+} // extern "C" {
+#endif // defined(__cplusplus)
 
