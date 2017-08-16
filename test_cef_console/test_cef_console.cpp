@@ -24,9 +24,13 @@
 
 #include "stdafx.h"
 
+#include "../test_cef_dll/test_cef_dll.h"
+
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+    test_cef__init();
+
 	return 0;
 }
 
