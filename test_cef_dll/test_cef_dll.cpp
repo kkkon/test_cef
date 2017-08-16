@@ -25,3 +25,24 @@
 #include "stdafx.h"
 #include "test_cef_dll.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif // defined(__cplusplus)
+
+
+BOOL
+TEST_CEF_DLL_API
+test_cef__init(void)
+{
+    return TRUE;
+}
+
+
+
+
+
+#if defined(__cplusplus)
+} // extern "C" {
+#endif // defined(__cplusplus)
+
+

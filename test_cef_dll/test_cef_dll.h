@@ -28,3 +28,16 @@
 #define TEST_CEF_DLL_API __declspec(dllimport)
 #endif
 
+#if defined(__cplusplus)
+extern "C" {
+#endif // defined(__cplusplus)
+
+BOOL
+TEST_CEF_DLL_API
+test_cef__init(void);
+
+
+#if defined(__cplusplus)
+} // extern "C" {
+#endif // defined(__cplusplus)
+
