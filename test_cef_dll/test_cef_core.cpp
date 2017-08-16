@@ -33,6 +33,18 @@
 #pragma comment(lib,"VS2013/libcef_dll_wrapper.lib")
 #endif // defined(_MSC_VER)
 
+#if defined(_WIN32)
+extern "C" HINSTANCE getMyInstance();
+#endif // defined(_WIN32)
+
+struct TestContext
+{
+    CefMainArgs     main_args;
+};
+
+static
+TestContext*        s_pContext = NULL;
+
 
 #if defined(__cplusplus)
 extern "C" {
@@ -42,6 +54,16 @@ extern "C" {
 BOOL
 test_cef_core__init(void)
 {
+    s_pContext = new TestContext;
+    if (NULL == s_pContext)
+    {
+        return FALSE;
+    }
+
+#if defined(_WIN32)
+    s_pContext->main_args = CefMainArgs(getMyInstance());
+#endif // defined(_WIN32)
+
     return TRUE;
 }
 
@@ -50,6 +72,11 @@ test_cef_core__term(void)
 {
     CefShutdown();
 
+    if (NULL != s_pContext)
+    {
+        delete s_pContext;
+        s_pContext = NULL;
+    }
     return TRUE;
 }
 

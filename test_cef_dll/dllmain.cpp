@@ -29,6 +29,12 @@ HINSTANCE                       s_hInstance = NULL;
 static
 bool                            s_isDynamicLoad = false;
 
+extern "C" HINSTANCE getMyInstance()
+{
+    return s_hInstance;
+}
+
+
 
 BOOL APIENTRY DllMain(
     HMODULE hModule
@@ -43,6 +49,7 @@ BOOL APIENTRY DllMain(
         {
             s_isDynamicLoad = true;
         }
+        s_hInstance = reinterpret_cast<HINSTANCE>(hModule);
         // call initialize
         break;
 
