@@ -86,6 +86,11 @@
     </ClCompile>
     <ClCompile Include="test_cef_console.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\test_cef_dll\test_cef_dll.vcxproj">
+      <Project>{e584475b-98f0-4d78-8cb0-8aad0181a21d}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
