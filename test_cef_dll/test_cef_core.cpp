@@ -33,6 +33,18 @@
 #pragma comment(lib,"VS2013/libcef_dll_wrapper.lib")
 #endif // defined(_MSC_VER)
 
+//#define CEF_USE_SANDBOX
+
+#if defined(CEF_USE_SANDBOX)
+#include "include/cef_sandbox_win.h"
+#if defined(_MSC_VER)
+#pragma comment(lib,"cef_sandbox.lib")
+#endif // defined(_MSC_VER)
+#endif defined(CEF_USE_SANDBOX)
+
+#include "test_cef_util.h"
+
+
 #if defined(_WIN32)
 extern "C" HINSTANCE getMyInstance();
 #endif // defined(_WIN32)
@@ -54,6 +66,18 @@ extern "C" {
 BOOL
 test_cef_core__init(void)
 {
+#if defined(_WIN32)
+    CefEnableHighDPISupport();
+
+    void* sandbox_info = NULL;
+
+#if defined(CEF_USE_SANDBOX)
+    CefScopedSandboxInfo    scoped_sandbox;
+    sandbox_info = scoped_sandbox.sandbox_info();
+#endif // defined(CEF_USE_SANDBOX)
+
+#endif // defined(_WIN32)
+
     s_pContext = new TestContext;
     if (NULL == s_pContext)
     {
