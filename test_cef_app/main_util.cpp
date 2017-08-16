@@ -23,35 +23,62 @@
  */
 
 #include "stdafx.h"
+#include "main_util.h"
+
+namespace {
+
+const char kProcessType[] = "type";
+
+const char kRendererProcess[] = "renderer";
+#if defined(LINUX)
+const char kZygoteProcess[] = "zygote";
+#endif // defined(LINUX)
+
+} // namespace
+
+
+
+CefRefPtr<CefCommandLine>
+createCommandLine( const CefMainArgs& main_args )
+{
+    CefRefPtr<CefCommandLine> command_line = CefCommandLine::CreateCommandLine();
 
 #if defined(_WIN32)
-
-extern int main_win(HINSTANCE hInstance);
-
-static
-HINSTANCE           s_hInstance = NULL;
-
-int
-APIENTRY
-_tWinMain(
-    HINSTANCE hInstance
-    ,HINSTANCE hPrevInstance
-    ,LPTSTR lpCmdLine
-    ,int nCmdShow
-)
-{
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
-    UNREFERENCED_PARAMETER(nCmdShow);
-
-    s_hInstance = hInstance;
-
-    return main_win(s_hInstance);
-}
-
+    command_line->InitFromString(::GetCommandLineW());
 #else
-int main(int argc, char* argv[])
-{
-    
-}
+    command_line->InitFromArgv( main_args.argc, main_args.argv );
 #endif
+
+    return command_line;
+}
+
+
+ProcessType
+getProcessType( const CefRefPtr<CefCommandLine>& command_line )
+{
+    if ( command_line->HasSwitch( kProcessType ) )
+    {
+        // none
+    }
+    else
+    {
+        return enmProcessType_Browser;
+    }
+
+    const std::string& process_type = command_line->GetSwitchValue( kProcessType );
+
+    if ( process_type == kRendererProcess )
+    {
+        return enmProcessType_Renderer;
+    }
+
+#if defined(LINUX)
+    if ( process_type == kZygoteProcess )
+    {
+        return enmProcessType_Renderer;
+    }
+#endif // defined(LINUX)
+
+    return enmProcessType_Other;
+}
+

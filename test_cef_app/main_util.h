@@ -22,36 +22,17 @@
  * THE SOFTWARE.
  */
 
-#include "stdafx.h"
+#pragma once
 
-#if defined(_WIN32)
+#include "include/cef_command_line.h"
 
-extern int main_win(HINSTANCE hInstance);
+CefRefPtr<CefCommandLine> createCommandLine(const CefMainArgs& main_args);
 
-static
-HINSTANCE           s_hInstance = NULL;
-
-int
-APIENTRY
-_tWinMain(
-    HINSTANCE hInstance
-    ,HINSTANCE hPrevInstance
-    ,LPTSTR lpCmdLine
-    ,int nCmdShow
-)
+enum ProcessType
 {
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
-    UNREFERENCED_PARAMETER(nCmdShow);
+    enmProcessType_Browser
+    , enmProcessType_Renderer
+    , enmProcessType_Other
+};
 
-    s_hInstance = hInstance;
-
-    return main_win(s_hInstance);
-}
-
-#else
-int main(int argc, char* argv[])
-{
-    
-}
-#endif
+ProcessType getProcessType(const CefRefPtr<CefCommandLine>& command_line);
