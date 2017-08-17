@@ -25,12 +25,28 @@
 #include "stdafx.h"
 
 #include "include/cef_base.h"
-#include "include/cef_app.h"
 
 #include "cef_app_browser.h"
+
 
 CefRefPtr<CefApp>
 createAppBrowserProcess()
 {
-    return NULL;
+    return new AppBrowser();
+}
+
+
+
+
+#include "cef_client.h"
+//#include "cef_browser_util.h"
+
+namespace {
+const char kStartupURL[] = "https://www.google.com";
+} // namespace {
+
+void
+AppBrowser::OnContextInitialized() //OVERRIDE
+{
+    //createBrowser(new Client(), kStartupURL, CefBrowserSettings());
 }

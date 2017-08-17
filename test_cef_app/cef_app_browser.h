@@ -24,12 +24,26 @@
 
 #pragma once
 
+#include "include/cef_app.h"
+#include "include/cef_browser_process_handler.h"
+
 class AppBrowser
     : public CefApp
-    //, public CefBrowserProcessHandler
+    , public CefBrowserProcessHandler
 {
 public:
     AppBrowser() {}
+
+    // CefApp
+    CefRefPtr<CefBrowserProcessHandler>
+    GetBrowserProcessHandler() OVERRIDE
+    {
+        return this;
+    }
+
+    // CefBrowserProcessHandler
+    void
+    OnContextInitialized() OVERRIDE;
 
 private:
     IMPLEMENT_REFCOUNTING(AppBrowser);
