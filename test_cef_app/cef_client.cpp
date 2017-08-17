@@ -73,3 +73,63 @@ Client::OnLoadError(
 }
 #endif
 
+
+CefRefPtr<CefResourceHandler>
+Client::GetResourceHandler(
+    CefRefPtr<CefBrowser> browser
+    , CefRefPtr<CefFrame> frame
+    , CefRefPtr<CefRequest> request
+) //OVERRIDE
+{
+    CEF_REQUIRE_IO_THREAD();
+    return NULL;
+}
+
+// CefResourceHandler
+CefRequestHandler::ReturnValue
+Client::OnBeforeResourceLoad(
+    CefRefPtr<CefBrowser> browser
+    , CefRefPtr<CefFrame> frame
+    , CefRefPtr<CefRequest> request
+    , CefRefPtr<CefRequestCallback> callback
+) //OVERRIDE
+{
+    CEF_REQUIRE_IO_THREAD();
+
+    request->GetURL();
+
+    CefRequest::HeaderMap   headerMap;
+    request->GetHeaderMap(headerMap);
+
+    bool needSetHeaderMap = false;
+    {
+        std::multimap<CefString, CefString>::iterator it =
+            headerMap.find( "User-Agent" );
+        if ( it != headerMap.end() )
+        {
+            std::string     newUA;
+            newUA = it->second;
+            newUA.append( " test" );
+            it->second = newUA;
+            needSetHeaderMap = true;
+
+            ++it;
+            if ( it != headerMap.end() )
+            {
+                // multi-value ??
+            }
+        }
+        else
+        {
+            //
+        }
+    }
+
+    if ( needSetHeaderMap )
+    {
+        request->SetHeaderMap(headerMap);
+    }
+
+    return RV_CONTINUE;
+}
+

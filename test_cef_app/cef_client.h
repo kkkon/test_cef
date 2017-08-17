@@ -31,6 +31,7 @@ class Client
     //, public CefDisplayHandler
     , public CefLifeSpanHandler
     , public CefLoadHandler
+    , public CefRequestHandler
 {
 public:
     Client() {}
@@ -66,7 +67,7 @@ public:
         CefRefPtr<CefBrowser> browser
         , CefRefPtr<CefFrame> frame
         , int httpStatusCode
-    ) OVERRIDE;
+        ) OVERRIDE;
 
     void
     OnLoadError(
@@ -77,6 +78,29 @@ public:
         , const CefString& failedURL
         ) OVERRIDE;
 #endif
+
+    CefRefPtr<CefRequestHandler>
+    GetRequestHandler() OVERRIDE
+    {
+        return this;
+    }
+
+    // CefRequestHandler
+    CefRefPtr<CefResourceHandler>
+    GetResourceHandler(
+        CefRefPtr<CefBrowser> browser
+        , CefRefPtr<CefFrame> frame
+        , CefRefPtr<CefRequest> request
+        ) OVERRIDE;
+
+    // CefResourceHandler
+    CefRequestHandler::ReturnValue
+    OnBeforeResourceLoad(
+        CefRefPtr<CefBrowser> browser
+        , CefRefPtr<CefFrame> frame
+        , CefRefPtr<CefRequest> request
+        , CefRefPtr<CefRequestCallback> callback
+        ) OVERRIDE;
 
 private:
     IMPLEMENT_REFCOUNTING(Client);
