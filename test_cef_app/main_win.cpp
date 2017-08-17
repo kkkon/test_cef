@@ -82,7 +82,7 @@ int main_win(HINSTANCE hInstance)
     const int exit_code = CefExecuteProcess(main_args, app, sandbox_info);
     if (0 <= exit_code)
     {
-        return FALSE;
+        return exit_code;
     }
 
     CefSettings         settings;
