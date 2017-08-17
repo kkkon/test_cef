@@ -30,6 +30,7 @@ class Client
     : public CefClient
     //, public CefDisplayHandler
     , public CefLifeSpanHandler
+    , public CefLoadHandler
 {
 public:
     Client() {}
@@ -43,6 +44,39 @@ public:
     // CefLifeSpanHandler
     void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
 
+
+    CefRefPtr<CefLoadHandler>
+    GetLoadHandler() OVERRIDE
+    {
+        return this;
+    }
+
+    // CefLoadHandler
+    void
+    OnLoadingStateChange(
+        CefRefPtr<CefBrowser> browser
+        , bool isLoading
+        , bool canGoBack
+        , bool canGoForward
+        ) OVERRIDE;
+
+#if 0
+    void
+        OnLoadEnd(
+        CefRefPtr<CefBrowser> browser
+        , CefRefPtr<CefFrame> frame
+        , int httpStatusCode
+    ) OVERRIDE;
+
+    void
+    OnLoadError(
+        CefRefPtr<CefBrowser> browser
+        , CefRefPtr<CefFrame> frame
+        , ErrorCode errorCode
+        , const CefString& errorText
+        , const CefString& failedURL
+        ) OVERRIDE;
+#endif
 
 private:
     IMPLEMENT_REFCOUNTING(Client);

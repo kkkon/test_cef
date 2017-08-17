@@ -37,3 +37,39 @@ Client::OnBeforeClose(CefRefPtr<CefBrowser> browser) // OVERRIDE
     // need counting
     CefQuitMessageLoop();
 }
+
+void
+Client::OnLoadingStateChange(
+    CefRefPtr<CefBrowser> browser
+    , bool isLoading
+    , bool canGoBack
+    , bool canGoForward
+) //OVERRIDE
+{
+    CEF_REQUIRE_UI_THREAD();
+}
+
+#if 0
+void
+Client::OnLoadEnd(
+    CefRefPtr<CefBrowser> browser
+    , CefRefPtr<CefFrame> frame
+    , int httpStatusCode
+) //OVERRIDE
+{
+    CEF_REQUIRE_UI_THREAD();
+}
+
+void
+Client::OnLoadError(
+    CefRefPtr<CefBrowser> browser
+    , CefRefPtr<CefFrame> frame
+    , ErrorCode errorCode
+    , const CefString& errorText
+    , const CefString& failedURL
+) // OVERRIDE
+{
+    CEF_REQUIRE_UI_THREAD();
+}
+#endif
+
