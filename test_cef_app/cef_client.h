@@ -34,6 +34,12 @@ class Client
 public:
     Client() {}
 
+    CefRefPtr<CefLifeSpanHandler>
+    GetLifeSpanHandler() OVERRIDE
+    {
+        return this;
+    }
+
     // CefLifeSpanHandler
     void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
 

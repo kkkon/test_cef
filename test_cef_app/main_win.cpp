@@ -92,7 +92,7 @@ int main_win(HINSTANCE hInstance)
 
     CefInitialize( main_args, settings, app, sandbox_info );
 
-    //CefRunMessageLoop();
+    CefRunMessageLoop();
 
     CefShutdown();
 
