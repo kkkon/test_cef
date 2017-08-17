@@ -24,3 +24,16 @@
 
 #include "stdafx.h"
 
+#include "cef_client.h"
+
+#include "include/cef_app.h"
+#include "include/wrapper/cef_helpers.h"
+
+void
+Client::OnBeforeClose(CefRefPtr<CefBrowser> browser) // OVERRIDE
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    // need counting
+    CefQuitMessageLoop();
+}

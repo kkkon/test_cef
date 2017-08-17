@@ -22,31 +22,11 @@
  * THE SOFTWARE.
  */
 
-#include "stdafx.h"
+#pragma once
 
-#include "include/cef_base.h"
+void createBrowser(
+    CefRefPtr<CefClient> client
+    , const CefString& startup_url
+    , const CefBrowserSettings& settings
+);
 
-#include "cef_app_browser.h"
-
-
-CefRefPtr<CefApp>
-createAppBrowserProcess()
-{
-    return new AppBrowser();
-}
-
-
-
-
-#include "cef_client.h"
-#include "cef_browser_util.h"
-
-namespace {
-const char kStartupURL[] = "https://www.google.com";
-} // namespace {
-
-void
-AppBrowser::OnContextInitialized() //OVERRIDE
-{
-    createBrowser(new Client(), kStartupURL, CefBrowserSettings());
-}

@@ -29,10 +29,14 @@
 class Client
     : public CefClient
     //, public CefDisplayHandler
-    //, public CefLifeSpanHandler
+    , public CefLifeSpanHandler
 {
 public:
     Client() {}
+
+    // CefLifeSpanHandler
+    void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
+
 
 private:
     IMPLEMENT_REFCOUNTING(Client);
