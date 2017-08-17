@@ -26,6 +26,10 @@
 
 #if defined(_WIN32)
 
+#if defined(_MSC_VER)
+#include <crtdbg.h>
+#endif // defined(_MSC_VER)
+
 extern int main_win(HINSTANCE hInstance);
 
 static
@@ -40,6 +44,17 @@ _tWinMain(
     ,int nCmdShow
 )
 {
+#if defined(_MSC_VER)
+#if defined(_DEBUG)
+    {
+        int flag = ::_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
+        flag |= _CRTDBG_LEAK_CHECK_DF;
+        flag |= _CRTDBG_CHECK_ALWAYS_DF;
+        ::_CrtSetDbgFlag(flag);
+    }
+#endif // defined(_DEBUG)
+#endif // defined(_MSC_VER)
+
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
     UNREFERENCED_PARAMETER(nCmdShow);
