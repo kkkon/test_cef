@@ -86,6 +86,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cef_app_browser.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main_util.cpp" />
     <ClCompile Include="main_win.cpp" />
@@ -95,6 +96,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cef_app_browser.h" />
+    <ClInclude Include="cef_app_factory.h" />
     <ClInclude Include="main_util.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />

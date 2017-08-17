@@ -30,6 +30,9 @@
     <ClCompile Include="main_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cef_app_browser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -39,6 +42,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="main_util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cef_app_browser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cef_app_factory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

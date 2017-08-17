@@ -45,6 +45,7 @@
 
 
 #include "main_util.h"
+#include "cef_app_factory.h"
 
 
 int main_win(HINSTANCE hInstance)
@@ -62,21 +63,21 @@ int main_win(HINSTANCE hInstance)
     CefMainArgs     main_args(hInstance);
 #endif // defined(OS_WIN)
 
+    CefRefPtr<CefApp>   app;
+
     CefRefPtr<CefCommandLine>   command_line = createCommandLine(main_args);
     switch (getProcessType(command_line))
     {
     case enmProcessType_Browser:
-        //s_pContext->app = createAppBrowserProcess();
+        app = createAppBrowserProcess();
         break;
     case enmProcessType_Renderer:
-        //s_pContext->app = createAppRendererProcess();
+        //app = createAppRendererProcess();
         break;
     case enmProcessType_Other:
-        //s_pContext->app = createAppOtherProcess();
+        //app = createAppOtherProcess();
         break;
     }
-
-    CefRefPtr<CefApp>   app;
 
     const int exit_code = CefExecuteProcess(main_args, app, sandbox_info);
     if (0 <= exit_code)
