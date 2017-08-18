@@ -103,6 +103,24 @@ void createBrowser(
         CefWindowHandle parent = NULL;
         const CefString kName = "test_cef";
         window_info.SetAsPopup( parent, kName );
+
+        window_info.width = 1280;
+        window_info.height = 720;
+
+        {
+            RECT    rect;
+
+            rect.left = 0;
+            rect.top = 0;
+            rect.bottom = window_info.height;
+            rect.right = window_info.width;
+
+            ::AdjustWindowRectEx(&rect, window_info.style, FALSE, window_info.ex_style);
+
+            window_info.width = rect.right - rect.left;
+            window_info.height = rect.bottom - rect.top;
+        }
+
 #endif // defined(OS_WIN)
 
         CefRefPtr<CefRequestContext> request_context = NULL;
