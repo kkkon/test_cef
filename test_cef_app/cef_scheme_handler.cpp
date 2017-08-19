@@ -27,6 +27,8 @@
 #include "cef_scheme_handler.h"
 
 #include "include/cef_scheme.h"
+#include "include/wrapper/cef_helpers.h"
+
 
 namespace {
 const char kScheme[] = "local";
@@ -34,14 +36,18 @@ const char kDomain[] = "test";
 } // namespace {
 
 
+class ClientSchemeHandlerFactory;
 
+static
+CefRefPtr<CefSchemeHandlerFactory>
+createClientSchemeHandlerFactory();
 
 void registerSchemeHandlerFactory()
 {
     const bool bRet = CefRegisterSchemeHandlerFactory(
         kScheme
         , kDomain
-        , NULL //new ClientSchemeHandlerFactory()
+        , createClientSchemeHandlerFactory()
         );
 
     DCHECK(bRet);
@@ -70,3 +76,45 @@ void addCustomScheme( CefRawPtr<CefSchemeRegistrar> registrar )
         );
     DCHECK( bRet );
 }
+
+
+class ClientSchemeHandlerFactory
+    : public CefSchemeHandlerFactory
+{
+public:
+    ClientSchemeHandlerFactory() {}
+
+    CefRefPtr<CefResourceHandler>
+    Create(
+        CefRefPtr<CefBrowser> browser
+        , CefRefPtr<CefFrame> frame
+        , const CefString& scheme_name
+        , CefRefPtr<CefRequest> request
+        ) OVERRIDE;
+
+private:
+    IMPLEMENT_REFCOUNTING(ClientSchemeHandlerFactory);
+    DISALLOW_COPY_AND_ASSIGN(ClientSchemeHandlerFactory);
+};
+
+
+CefRefPtr<CefResourceHandler>
+ClientSchemeHandlerFactory::Create(
+    CefRefPtr<CefBrowser> browser
+    , CefRefPtr<CefFrame> frame
+    , const CefString& scheme_name
+    , CefRefPtr<CefRequest> request
+) // OVERRIDE
+{
+    CEF_REQUIRE_IO_THREAD();
+
+    return NULL;
+}
+
+
+CefRefPtr<CefSchemeHandlerFactory>
+createClientSchemeHandlerFactory()
+{
+    return new ClientSchemeHandlerFactory();
+}
+
