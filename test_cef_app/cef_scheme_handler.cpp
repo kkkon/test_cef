@@ -139,7 +139,11 @@ class ClientSchemeHandler
     : public CefResourceHandler
 {
 public:
-    ClientSchemeHandler() {}
+    ClientSchemeHandler()
+        : is_binary_(false)
+        , offset_(0)
+    {
+    }
 
     bool
     ProcessRequest(
@@ -164,6 +168,12 @@ public:
 
     void
     Cancel() OVERRIDE;
+
+private:
+    std::string                 mime_type_;
+    std::vector<uint8_t>        data_;
+    bool                        is_binary_;
+    size_t                      offset_;
 
 private:
     IMPLEMENT_REFCOUNTING(ClientSchemeHandler);
