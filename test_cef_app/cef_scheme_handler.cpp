@@ -36,11 +36,15 @@ const char kDomain[] = "test";
 } // namespace {
 
 
-class ClientSchemeHandlerFactory;
-
 static
 CefRefPtr<CefSchemeHandlerFactory>
 createClientSchemeHandlerFactory();
+
+static
+CefRefPtr<CefResourceHandler>
+createClientSchemeHandler();
+
+
 
 void registerSchemeHandlerFactory()
 {
@@ -78,6 +82,13 @@ void addCustomScheme( CefRawPtr<CefSchemeRegistrar> registrar )
 }
 
 
+
+
+
+
+
+
+
 class ClientSchemeHandlerFactory
     : public CefSchemeHandlerFactory
 {
@@ -108,13 +119,105 @@ ClientSchemeHandlerFactory::Create(
 {
     CEF_REQUIRE_IO_THREAD();
 
-    return NULL;
+    return createClientSchemeHandler();
 }
 
 
 CefRefPtr<CefSchemeHandlerFactory>
 createClientSchemeHandlerFactory()
 {
-    return new ClientSchemeHandlerFactory();
+    return NULL;
 }
 
+
+
+
+
+
+
+class ClientSchemeHandler
+    : public CefResourceHandler
+{
+public:
+    ClientSchemeHandler() {}
+
+    bool
+    ProcessRequest(
+        CefRefPtr<CefRequest> request
+        , CefRefPtr<CefCallback> callback
+        ) OVERRIDE;
+
+    void
+    GetResponseHeaders(
+        CefRefPtr<CefResponse> response
+        , int64& response_length
+        , CefString& redirectUrl
+        ) OVERRIDE;
+
+    bool
+    ReadResponse(
+        void* data_out
+        , int bytes_to_read
+        , int& bytes_read
+        , CefRefPtr<CefCallback> callback
+        ) OVERRIDE;
+
+    void
+    Cancel() OVERRIDE;
+
+private:
+    IMPLEMENT_REFCOUNTING(ClientSchemeHandler);
+    DISALLOW_COPY_AND_ASSIGN(ClientSchemeHandler);
+};
+
+
+
+bool
+ClientSchemeHandler::ProcessRequest(
+    CefRefPtr<CefRequest> request
+    , CefRefPtr<CefCallback> callback
+) // OVERRIDE
+{
+    CEF_REQUIRE_IO_THREAD();
+
+    return false;
+}
+
+void
+ClientSchemeHandler::GetResponseHeaders(
+    CefRefPtr<CefResponse> response
+    , int64& response_length
+    , CefString& redirectUrl
+) // OVERRIDE
+{
+    CEF_REQUIRE_IO_THREAD();
+}
+
+bool
+ClientSchemeHandler::ReadResponse(
+    void* data_out
+    , int bytes_to_read
+    , int& bytes_read
+    , CefRefPtr<CefCallback> callback
+) // OVERRIDE
+{
+    CEF_REQUIRE_IO_THREAD();
+
+    return true;
+}
+
+void
+ClientSchemeHandler::Cancel() // OVERRIDE
+{
+    CEF_REQUIRE_IO_THREAD();
+}
+
+
+
+
+
+CefRefPtr<CefResourceHandler>
+createClientSchemeHandler()
+{
+    return new ClientSchemeHandler();
+}
