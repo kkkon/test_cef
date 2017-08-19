@@ -50,7 +50,8 @@ AppBrowser::OnRegisterCustomSchemes(
 #include "cef_browser_util.h"
 
 namespace {
-const char kStartupURL[] = "https://www.google.com";
+//const char kStartupURL[] = "https://www.google.com";
+const char kStartupURL[] = "file:///resources_scheme/test.html";
 } // namespace {
 
 void
