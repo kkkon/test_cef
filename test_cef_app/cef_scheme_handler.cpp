@@ -126,7 +126,7 @@ ClientSchemeHandlerFactory::Create(
 CefRefPtr<CefSchemeHandlerFactory>
 createClientSchemeHandlerFactory()
 {
-    return NULL;
+    return new ClientSchemeHandlerFactory();
 }
 
 
