@@ -180,7 +180,55 @@ private:
     DISALLOW_COPY_AND_ASSIGN(ClientSchemeHandler);
 };
 
+static
+bool
+ends_with(const std::string& str, const std::string& suffix)
+{
+    if ( str.size() < suffix.size() )
+    {
+        return false;
+    }
+    return std::equal( std::rbegin(suffix), std::rend(suffix), std::rbegin(str) );
+    //return ( 0 == str.compare( str.size() - suffix.size(), suffix.size(), suffix ));
+}
 
+static
+bool
+parseURL(std::string& scheme, std::string& domain, std::string& path, const std::string& url)
+{
+    const size_t pos_scheme = url.find( "://" );
+    if ( std::string::npos == pos_scheme )
+    {
+        return false;
+    }
+
+    scheme = url.substr( 0, pos_scheme );
+
+    if ( url.size() <= (pos_scheme + 3/*strlen("://")*/) )
+    {
+        return false;
+    }
+
+    const size_t pos_domain = url.find( '/', (pos_scheme + 3/*strlen("://")*/) );
+    if ( std::string::npos == pos_domain )
+    {
+        return false;
+    }
+    domain = url.substr( (pos_scheme + 3/*strlen("://")*/), pos_domain - (pos_scheme + 3/*strlen("://")*/) );
+
+    if ( url.size() <= (pos_domain + 1/*strlen("/")*/) )
+    {
+        return false;
+    }
+
+    path = url.substr( (pos_domain + 1/*strlen("/")*/) );
+
+    return true;
+}
+
+//static
+//bool
+//readResource( 
 
 bool
 ClientSchemeHandler::ProcessRequest(
@@ -190,7 +238,22 @@ ClientSchemeHandler::ProcessRequest(
 {
     CEF_REQUIRE_IO_THREAD();
 
-    return false;
+    bool handled = false;
+
+    std::string url = request->GetURL();
+
+    std::string scheme;
+    std::string domain;
+    std::string path;
+    {
+        const bool bRet = parseURL( scheme, domain, path, url );
+    }
+
+    if ( ends_with( url, ".html" ) )
+    {
+    }
+
+    return handled;
 }
 
 void
