@@ -24,32 +24,25 @@
 
 #include "stdafx.h"
 
-#include "include/cef_base.h"
-
-#include "cef_app_browser.h"
-
 #include "cef_scheme_handler.h"
 
-CefRefPtr<CefApp>
-createAppBrowserProcess()
-{
-    return new AppBrowser();
-}
-
-
-
-
-#include "cef_client.h"
-#include "cef_browser_util.h"
+#include "include/cef_scheme.h"
 
 namespace {
-const char kStartupURL[] = "https://www.google.com";
+const char kScheme[] = "local";
+const char kDomain[] = "test";
 } // namespace {
 
-void
-AppBrowser::OnContextInitialized() //OVERRIDE
-{
-    registerSchemeHandlerFactory();
 
-    createBrowser(new Client(), kStartupURL, CefBrowserSettings());
+
+
+void registerSchemeHandlerFactory()
+{
+    const bool bRet = CefRegisterSchemeHandlerFactory(
+        kScheme
+        , kDomain
+        , NULL //new ClientSchemeHandlerFactory()
+        );
+
+    DCHECK(bRet);
 }
