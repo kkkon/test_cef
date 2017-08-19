@@ -37,6 +37,13 @@ createAppBrowserProcess()
 }
 
 
+void
+AppBrowser::OnRegisterCustomSchemes(
+    CefRawPtr<CefSchemeRegistrar> registrar
+) // OVERRIDE
+{
+    addCustomScheme( registrar );
+}
 
 
 #include "cef_client.h"

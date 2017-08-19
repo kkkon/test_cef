@@ -24,5 +24,10 @@
 
 #pragma once
 
+#include "include/cef_base.h"
+#include "include/cef_scheme.h"
+
 void registerSchemeHandlerFactory();
+
+void addCustomScheme( CefRawPtr<CefSchemeRegistrar> registrar );
 

@@ -46,3 +46,27 @@ void registerSchemeHandlerFactory()
 
     DCHECK(bRet);
 }
+
+
+void addCustomScheme( CefRawPtr<CefSchemeRegistrar> registrar )
+{
+    const bool is_standard = true;
+    const bool is_local = false;
+    const bool is_display_isolated = false;
+    const bool is_secure = true;
+    const bool is_cors_enabled = false;
+    const bool is_csp_bypassing = false;
+
+    const bool bRet = registrar->AddCustomScheme(
+        kScheme
+        , is_standard
+        , is_local
+        , is_display_isolated
+        , is_secure
+        , is_cors_enabled
+#if CHROME_VERSION_BUILD > 2987
+        , is_csp_bypassing
+#endif // CHROME_VERSION_BUILD > 2987
+        );
+    DCHECK( bRet );
+}

@@ -41,6 +41,12 @@ public:
         return this;
     }
 
+    // CefApp
+    void
+    OnRegisterCustomSchemes(
+        CefRawPtr<CefSchemeRegistrar> registrar
+        ) OVERRIDE;
+
     // CefBrowserProcessHandler
     void
     OnContextInitialized() OVERRIDE;
