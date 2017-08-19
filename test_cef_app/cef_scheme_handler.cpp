@@ -226,9 +226,57 @@ parseURL(std::string& scheme, std::string& domain, std::string& path, const std:
     return true;
 }
 
-//static
-//bool
-//readResource( 
+#if defined(_MSC_VER)
+#pragma warning(disable : 4996)
+#endif // defined(_MSC_VER)
+
+static
+bool
+readResource( const std::string& path, std::vector<uint8_t>& data )
+{
+    std::string     relPath;
+    relPath = "resources_scheme/";
+    relPath += path;
+
+    FILE* fp = fopen( relPath.c_str(), "rb" );
+    if ( NULL == fp )
+    {
+        return false;
+    }
+
+    data.reserve( 256*1024 );
+
+    char buff[16];
+    size_t pos = 0;
+    size_t len;
+    while ( 0 < (len = fread( buff, 1, sizeof(buff), fp ) ) )
+    {
+        if ( data.size() < ( pos + len ) )
+        {
+            data.resize( (pos + len) );
+        }
+        memcpy( &(data.at(pos)), buff, len );
+        pos += len;
+    }
+
+    fclose( fp );
+    fp = NULL;
+
+#if 0 // defined(OS_WIN)
+    {
+        char buff[128];
+        ::wsprintfA( buff, "size=%u\n", data.size() );
+        ::OutputDebugStringA( buff );
+    }
+    {
+        std::string str;
+        str.append( (const char*)&data.at(0), data.size() );
+        ::OutputDebugStringA( str.c_str() );
+    }
+#endif
+
+    return true;
+}
 
 bool
 ClientSchemeHandler::ProcessRequest(
@@ -251,6 +299,7 @@ ClientSchemeHandler::ProcessRequest(
 
     if ( ends_with( url, ".html" ) )
     {
+        const bool bRet = readResource( path, this->data_ );
     }
 
     return handled;
