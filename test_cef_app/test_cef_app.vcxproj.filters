@@ -39,6 +39,9 @@
     <ClCompile Include="cef_browser_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cef_scheme_handler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -60,6 +63,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cef_browser_util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cef_scheme_handler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

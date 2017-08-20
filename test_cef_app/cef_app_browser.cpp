@@ -28,6 +28,7 @@
 
 #include "cef_app_browser.h"
 
+#include "cef_scheme_handler.h"
 
 CefRefPtr<CefApp>
 createAppBrowserProcess()
@@ -36,17 +37,27 @@ createAppBrowserProcess()
 }
 
 
+void
+AppBrowser::OnRegisterCustomSchemes(
+    CefRawPtr<CefSchemeRegistrar> registrar
+) // OVERRIDE
+{
+    addCustomScheme( registrar );
+}
 
 
 #include "cef_client.h"
 #include "cef_browser_util.h"
 
 namespace {
-const char kStartupURL[] = "https://www.google.com";
+//const char kStartupURL[] = "https://www.google.com";
+const char kStartupURL[] = "file:///resources_scheme/test.html";
 } // namespace {
 
 void
 AppBrowser::OnContextInitialized() //OVERRIDE
 {
+    registerSchemeHandlerFactory();
+
     createBrowser(new Client(), kStartupURL, CefBrowserSettings());
 }

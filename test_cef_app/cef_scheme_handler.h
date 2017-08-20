@@ -24,35 +24,10 @@
 
 #pragma once
 
-#include "include/cef_app.h"
-#include "include/cef_browser_process_handler.h"
+#include "include/cef_base.h"
+#include "include/cef_scheme.h"
 
-class AppBrowser
-    : public CefApp
-    , public CefBrowserProcessHandler
-{
-public:
-    AppBrowser() {}
+void registerSchemeHandlerFactory();
 
-    // CefApp
-    CefRefPtr<CefBrowserProcessHandler>
-    GetBrowserProcessHandler() OVERRIDE
-    {
-        return this;
-    }
-
-    // CefApp
-    void
-    OnRegisterCustomSchemes(
-        CefRawPtr<CefSchemeRegistrar> registrar
-        ) OVERRIDE;
-
-    // CefBrowserProcessHandler
-    void
-    OnContextInitialized() OVERRIDE;
-
-private:
-    IMPLEMENT_REFCOUNTING(AppBrowser);
-    DISALLOW_COPY_AND_ASSIGN(AppBrowser);
-};
+void addCustomScheme( CefRawPtr<CefSchemeRegistrar> registrar );
 
