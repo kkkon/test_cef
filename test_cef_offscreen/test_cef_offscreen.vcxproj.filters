@@ -71,7 +71,7 @@
     <ClCompile Include="..\test_cef_app\main_util.cpp">
       <Filter>cef</Filter>
     </ClCompile>
-    <ClCompile Include="..\test_cef_app\main_win.cpp">
+    <ClCompile Include="..\test_cef_app\main_win_offscreen.cpp">
       <Filter>cef</Filter>
     </ClCompile>
   </ItemGroup>

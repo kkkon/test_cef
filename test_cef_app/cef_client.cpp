@@ -133,3 +133,48 @@ Client::OnBeforeResourceLoad(
     return RV_CONTINUE;
 }
 
+
+
+
+
+#if defined(USE_CEF_OFFSCREEN)
+
+extern HWND s_hWnd;
+
+bool
+Client::GetViewRect(
+    CefRefPtr<CefBrowser> browser
+    , CefRect& rect
+) // OVERRIDE
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    bool result = false;
+
+#if defined(OS_WIN)
+    {
+        RECT    rectNative;
+        const BOOL BRet = ::GetClientRect(s_hWnd, &rectNative);
+        rect.width = rectNative.right - rectNative.left;
+        rect.height = rectNative.bottom - rectNative.top;
+
+        result = (BRet)?(true):(false);
+    }
+#endif // defined(OS_WIN)
+
+    return result;
+}
+
+void
+Client::OnPaint(
+    CefRefPtr<CefBrowser> browser
+    , PaintElementType type
+    , const RectList& dirtyRects
+    , const void* buffer
+    , int width, int height
+) // OVERRIDE
+{
+    CEF_REQUIRE_UI_THREAD();
+}
+
+#endif // defined(USE_CEF_OFFSCREEN)

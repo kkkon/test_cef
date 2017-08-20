@@ -32,6 +32,9 @@ class Client
     , public CefLifeSpanHandler
     , public CefLoadHandler
     , public CefRequestHandler
+#if defined(USE_CEF_OFFSCREEN)
+    , public CefRenderHandler
+#endif // defined(USE_CEF_OFFSCREEN)
 {
 public:
     Client() {}
@@ -101,6 +104,32 @@ public:
         , CefRefPtr<CefRequest> request
         , CefRefPtr<CefRequestCallback> callback
         ) OVERRIDE;
+
+
+#if defined(USE_CEF_OFFSCREEN)
+    CefRefPtr<CefRenderHandler>
+    GetRenderHandler() OVERRIDE
+    {
+        return this;
+    }
+
+    // CefRenderHandler
+    bool
+    GetViewRect(
+        CefRefPtr<CefBrowser> browser
+        , CefRect& rect
+        ) OVERRIDE;
+
+    void
+    OnPaint(
+        CefRefPtr<CefBrowser> browser
+        , PaintElementType type
+        , const RectList& dirtyRects
+        , const void* buffer
+        , int width, int height
+        ) OVERRIDE;
+
+#endif // defined(USE_CEF_OFFSCREEN)
 
 private:
     IMPLEMENT_REFCOUNTING(Client);

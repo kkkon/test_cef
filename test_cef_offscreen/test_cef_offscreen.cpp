@@ -26,6 +26,11 @@
 #include "stdafx.h"
 #include "test_cef_offscreen.h"
 
+extern int main_win(HINSTANCE hInstance);
+extern int main_win_term();
+
+
+
 #define MAX_LOADSTRING 100
 
 HWND        s_hWnd;
@@ -45,6 +50,15 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
+
+    {
+        const int nRet = main_win(hInstance);
+        if ( 0 <= nRet )
+        {
+            return nRet;
+        }
+    }
+
 
     MSG msg;
     HACCEL hAccelTable;
@@ -67,6 +81,10 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
+    }
+
+    {
+        main_win_term();
     }
 
     return (int) msg.wParam;
@@ -101,8 +119,32 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    hInst = hInstance;
 
-   hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
+   DWORD dwStyle = WS_OVERLAPPEDWINDOW;
+   dwStyle ^= WS_MINIMIZEBOX;
+   dwStyle ^= WS_MAXIMIZEBOX;
+   dwStyle ^= WS_THICKFRAME;
+
+   DWORD dwExStyle = 0;
+
+   int width = CW_USEDEFAULT;
+   int height = CW_USEDEFAULT;
+   {
+       RECT     rect;
+
+       rect.left = 0;
+       rect.top = 0;
+       rect.bottom = 720;
+       rect.right = 1280;
+
+       ::AdjustWindowRectEx(&rect, dwStyle, TRUE, dwExStyle);
+
+       width = rect.right - rect.left;
+       height = rect.bottom - rect.top;
+   }
+
+
+   hWnd = CreateWindow(szWindowClass, szTitle, dwStyle,
+      CW_USEDEFAULT, 0, width, height, NULL, NULL, hInstance, NULL);
 
    if (!hWnd)
    {
