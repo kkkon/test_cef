@@ -28,6 +28,7 @@
 
 #define MAX_LOADSTRING 100
 
+HWND        s_hWnd;
 HINSTANCE hInst;
 TCHAR szTitle[MAX_LOADSTRING];
 TCHAR szWindowClass[MAX_LOADSTRING];
@@ -110,6 +111,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
+
+   s_hWnd = hWnd;
 
    return TRUE;
 }
