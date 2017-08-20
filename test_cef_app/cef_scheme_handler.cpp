@@ -141,6 +141,7 @@ class ClientSchemeHandler
 public:
     ClientSchemeHandler()
         : is_binary_(false)
+        , delay_count_(0)
         , offset_(0)
     {
     }
@@ -173,6 +174,7 @@ private:
     std::string                 mime_type_;
     std::vector<uint8_t>        data_;
     bool                        is_binary_;
+    size_t                      delay_count_;
     size_t                      offset_;
 
 private:
@@ -300,6 +302,16 @@ ClientSchemeHandler::ProcessRequest(
     if ( ends_with( url, ".html" ) )
     {
         const bool bRet = readResource( path, this->data_ );
+        if ( bRet )
+        {
+            handled = true;
+            this->mime_type_ = "text/html";
+        }
+    }
+
+    if ( handled )
+    {
+        callback->Continue();
     }
 
     return handled;
@@ -313,6 +325,13 @@ ClientSchemeHandler::GetResponseHeaders(
 ) // OVERRIDE
 {
     CEF_REQUIRE_IO_THREAD();
+
+    DCHECK( false == this->data_.empty() );
+
+    response->SetMimeType( this->mime_type_ );
+    response->SetStatus( 200 );
+
+    response_length = this->data_.size();
 }
 
 bool
@@ -325,7 +344,45 @@ ClientSchemeHandler::ReadResponse(
 {
     CEF_REQUIRE_IO_THREAD();
 
-    return true;
+    bool transfer_data = false;
+
+    bytes_read = 0;
+
+    bool notready = true;
+    {
+        this->delay_count_ += 1;
+        if ( 3 < this->delay_count_ )
+        {
+            this->delay_count_ = 0;
+            notready = false;
+        }
+    }
+
+    if ( notready )
+    {
+        bytes_read = 0;
+        callback->Continue();
+        transfer_data = true;
+    }
+    else
+    {
+        if ( this->offset_ < this->data_.size() )
+        {
+            bytes_to_read = 16;
+            const int transfer_size =
+                std::min(
+                    bytes_to_read
+                    , static_cast<int>( this->data_.size() - this->offset_ )
+                    );
+            memcpy( data_out, &(this->data_.at(this->offset_)), transfer_size );
+            this->offset_ += transfer_size;
+
+            bytes_read = transfer_size;
+            transfer_data = true;
+        }
+    }
+
+    return transfer_data;
 }
 
 void
