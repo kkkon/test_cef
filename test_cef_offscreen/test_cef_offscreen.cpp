@@ -36,6 +36,7 @@ extern int main_win_term();
 HWND        s_hWnd = NULL;
 HDC         s_memDC = NULL;
 HBITMAP     s_memBitmap = NULL;
+void*       s_memBitmapPixel = NULL;
 HBITMAP     s_memBitmapPrev = NULL;
 
 
@@ -177,11 +178,33 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             hdc = GetDC( hWnd );
 
             s_memDC = CreateCompatibleDC( hdc );
-            s_memBitmap = CreateCompatibleBitmap( hdc, 1280, 720 );
-            if ( NULL == s_memBitmap )
             {
-                ReleaseDC( hWnd, hdc );
-                return -1;
+                BITMAPINFO bi;
+
+                ZeroMemory( &bi, sizeof(bi) );
+                bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+                bi.bmiHeader.biBitCount = 32;
+                bi.bmiHeader.biPlanes = 1;
+                bi.bmiHeader.biWidth = 1280;
+                bi.bmiHeader.biHeight = -720;
+
+                s_memBitmap = CreateDIBSection( NULL, &bi, DIB_RGB_COLORS, &s_memBitmapPixel, NULL, 0 );
+                if ( NULL == s_memBitmap )
+                {
+                    ReleaseDC( hWnd, hdc );
+                    return -1;
+                }
+
+                {
+                    DWORD* p = reinterpret_cast<DWORD*>(s_memBitmapPixel);
+                    for ( int x = 0; x < 1280; ++x )
+                    {
+                        for ( int y = 0; y < 720; ++y )
+                        {
+                            p[y*1280 + x] = 0xffffffffUL;
+                        }
+                    }
+                }
             }
             s_memBitmapPrev = (HBITMAP)SelectObject( s_memDC, s_memBitmap );
 
@@ -206,6 +229,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_PAINT:
         hdc = BeginPaint(hWnd, &ps);
+        BitBlt( hdc, 0, 0, 1280, 720, s_memDC, 0, 0, SRCCOPY );
         EndPaint(hWnd, &ps);
         break;
     case WM_DESTROY:
@@ -218,6 +242,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     s_memBitmapPrev = NULL;
                     DeleteObject( s_memBitmap );
                     s_memBitmap = NULL;
+                    s_memBitmapPixel = NULL;
                 }
 
                 DeleteDC( s_memDC );
