@@ -33,7 +33,12 @@ extern int main_win_term();
 
 #define MAX_LOADSTRING 100
 
-HWND        s_hWnd;
+HWND        s_hWnd = NULL;
+HDC         s_memDC = NULL;
+HBITMAP     s_memBitmap = NULL;
+HBITMAP     s_memBitmapPrev = NULL;
+
+
 HINSTANCE hInst;
 TCHAR szTitle[MAX_LOADSTRING];
 TCHAR szWindowClass[MAX_LOADSTRING];
@@ -167,6 +172,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     switch (message)
     {
+    case WM_CREATE:
+        {
+            hdc = GetDC( hWnd );
+
+            s_memDC = CreateCompatibleDC( hdc );
+            s_memBitmap = CreateCompatibleBitmap( hdc, 1280, 720 );
+            if ( NULL == s_memBitmap )
+            {
+                ReleaseDC( hWnd, hdc );
+                return -1;
+            }
+            s_memBitmapPrev = (HBITMAP)SelectObject( s_memDC, s_memBitmap );
+
+            ReleaseDC( hWnd, hdc );
+        }
+        break;
+
     case WM_COMMAND:
         wmId    = LOWORD(wParam);
         wmEvent = HIWORD(wParam);
@@ -187,6 +209,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         EndPaint(hWnd, &ps);
         break;
     case WM_DESTROY:
+        {
+            if ( NULL != s_memDC )
+            {
+                if ( NULL != s_memBitmap )
+                {
+                    SelectObject( s_memDC, s_memBitmapPrev );
+                    s_memBitmapPrev = NULL;
+                    DeleteObject( s_memBitmap );
+                    s_memBitmap = NULL;
+                }
+
+                DeleteDC( s_memDC );
+                s_memDC = NULL;
+            }
+        }
         PostQuitMessage(0);
         break;
     default:
