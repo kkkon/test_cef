@@ -308,6 +308,16 @@ ClientSchemeHandler::ProcessRequest(
             this->mime_type_ = "text/html";
         }
     }
+    else
+    if ( ends_with( url, ".png" ) )
+    {
+        const bool bRet = readResource( path, this->data_ );
+        if ( bRet )
+        {
+            handled = true;
+            this->mime_type_ = "image/png";
+        }
+    }
 
     if ( handled )
     {
