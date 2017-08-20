@@ -149,6 +149,12 @@ Client::GetViewRect(
 {
     CEF_REQUIRE_UI_THREAD();
 
+#if 1
+    rect.width = 1280;
+    rect.height = 720;
+
+    return true;
+#else
     bool result = false;
 
 #if defined(OS_WIN)
@@ -163,7 +169,10 @@ Client::GetViewRect(
 #endif // defined(OS_WIN)
 
     return result;
+#endif
 }
+
+extern void*        s_memBitmapPixel;
 
 void
 Client::OnPaint(
@@ -175,6 +184,56 @@ Client::OnPaint(
 ) // OVERRIDE
 {
     CEF_REQUIRE_UI_THREAD();
+
+#if 0
+    {
+        uint32_t* p = reinterpret_cast<uint32_t*>(s_memBitmapPixel);
+        for ( int x = 0; x < 1280; ++x )
+        {
+            for ( int y = 0; y < 720; ++y )
+            {
+                p[y*1280 + x] = 0x000000ffUL;
+            }
+        }
+    }
+#endif
+
+#if 1
+    if (1 == dirtyRects.size() && dirtyRects[0] == CefRect(0, 0, 1280, 720))
+    {
+        memcpy(s_memBitmapPixel, buffer, 1280 * 720);
+    }
+    else
+    {
+        CefRenderHandler::RectList::const_iterator it =
+            dirtyRects.begin();
+
+        for ( ; it != dirtyRects.end(); ++it )
+        {
+            const CefRect& rect = *it;
+#if 1
+            uint32_t* pMem = reinterpret_cast<uint32_t*>(s_memBitmapPixel);
+            const uint32_t* p = reinterpret_cast<const uint32_t*>(buffer);
+            size_t index = 0;
+            for ( int x = rect.x; x < rect.x + rect.width; ++x )
+            {
+                for ( int y = rect.y; y < rect.y + rect.height; ++y )
+                {
+                    pMem[y*1280+x] = p[index];
+                    ++index;
+                }
+            }
+#endif
+        }
+    }
+#endif
+#if defined(OS_WIN)
+    {
+        extern HWND s_hWnd;
+        ::InvalidateRect(s_hWnd, NULL, FALSE);
+        ::UpdateWindow(s_hWnd);
+    }
+#endif
 }
 
 #endif // defined(USE_CEF_OFFSCREEN)

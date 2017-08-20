@@ -201,7 +201,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     {
                         for ( int y = 0; y < 720; ++y )
                         {
-                            p[y*1280 + x] = 0xffffffffUL;
+                            // A,R,G,B
+                            //p[y*1280 + x] = 0xffffffffUL;
+                            p[y*1280 + x] = 0x0000ff00UL;
                         }
                     }
                 }
