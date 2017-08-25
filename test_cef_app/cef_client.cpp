@@ -241,7 +241,23 @@ Client::OnPaint(
 #if defined(OS_WIN)
     {
         extern HWND s_hWnd;
-        ::InvalidateRect(s_hWnd, NULL, FALSE);
+
+        RECT    rectNative;
+        CefRenderHandler::RectList::const_iterator it =
+            dirtyRects.begin();
+
+        for (; it != dirtyRects.end(); ++it)
+        {
+            const CefRect& rect = *it;
+
+            rectNative.left = rect.x;
+            rectNative.top = rect.y;
+            rectNative.right = rect.x + rect.width;
+            rectNative.bottom = rect.y + rect.height;
+
+            ::InvalidateRect(s_hWnd, &rectNative, FALSE);
+        }
+
         ::UpdateWindow(s_hWnd);
     }
 #endif
