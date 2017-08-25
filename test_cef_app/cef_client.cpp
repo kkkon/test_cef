@@ -185,6 +185,8 @@ Client::OnPaint(
 {
     CEF_REQUIRE_UI_THREAD();
 
+    //DLOG(INFO) << "Client::OnPaint(" << browser << ")" << " w=" << width << ",h=" << height;
+
 #if 0
     {
         uint32_t* p = reinterpret_cast<uint32_t*>(s_memBitmapPixel);
@@ -214,13 +216,11 @@ Client::OnPaint(
 #if 1
             uint32_t* pMem = reinterpret_cast<uint32_t*>(s_memBitmapPixel);
             const uint32_t* p = reinterpret_cast<const uint32_t*>(buffer);
-            size_t index = 0;
             for ( int x = rect.x; x < rect.x + rect.width; ++x )
             {
                 for ( int y = rect.y; y < rect.y + rect.height; ++y )
                 {
-                    pMem[y*1280+x] = p[index];
-                    ++index;
+                    pMem[y*1280+x] = p[y*width+x];
                 }
             }
 #endif
