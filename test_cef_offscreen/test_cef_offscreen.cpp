@@ -29,6 +29,7 @@
 extern int main_win(HINSTANCE hInstance);
 extern int main_win_term();
 
+#include "include/base/cef_lock.h"
 
 
 #define MAX_LOADSTRING 100
@@ -37,8 +38,8 @@ HWND        s_hWnd = NULL;
 HDC         s_memDC = NULL;
 HBITMAP     s_memBitmap = NULL;
 void*       s_memBitmapPixel = NULL;
+base::Lock  s_memBitmapPixelLock;
 HBITMAP     s_memBitmapPrev = NULL;
-
 
 HINSTANCE hInst;
 TCHAR szTitle[MAX_LOADSTRING];
@@ -188,22 +189,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 bi.bmiHeader.biWidth = 1280;
                 bi.bmiHeader.biHeight = -720;
 
-                s_memBitmap = CreateDIBSection( NULL, &bi, DIB_RGB_COLORS, &s_memBitmapPixel, NULL, 0 );
-                if ( NULL == s_memBitmap )
                 {
-                    ReleaseDC( hWnd, hdc );
-                    return -1;
-                }
+                    base::AutoLock  lock_scope(s_memBitmapPixelLock);
 
-                {
-                    DWORD* p = reinterpret_cast<DWORD*>(s_memBitmapPixel);
-                    for ( int x = 0; x < 1280; ++x )
+                    s_memBitmap = CreateDIBSection( NULL, &bi, DIB_RGB_COLORS, &s_memBitmapPixel, NULL, 0 );
+                    if ( NULL == s_memBitmap )
                     {
-                        for ( int y = 0; y < 720; ++y )
+                        ReleaseDC( hWnd, hdc );
+                        return -1;
+                    }
+
+                    {
+                        DWORD* p = reinterpret_cast<DWORD*>(s_memBitmapPixel);
+                        for ( int x = 0; x < 1280; ++x )
                         {
-                            // A,R,G,B
-                            //p[y*1280 + x] = 0xffffffffUL;
-                            p[y*1280 + x] = 0x0000ff00UL;
+                            for ( int y = 0; y < 720; ++y )
+                            {
+                                // A,R,G,B
+                                //p[y*1280 + x] = 0xffffffffUL;
+                                p[y*1280 + x] = 0x0000ff00UL;
+                            }
                         }
                     }
                 }
@@ -240,6 +245,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             {
                 if ( NULL != s_memBitmap )
                 {
+                    base::AutoLock  lock_scope(s_memBitmapPixelLock);
+
                     SelectObject( s_memDC, s_memBitmapPrev );
                     s_memBitmapPrev = NULL;
                     DeleteObject( s_memBitmap );

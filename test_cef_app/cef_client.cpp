@@ -173,6 +173,7 @@ Client::GetViewRect(
 }
 
 extern void*        s_memBitmapPixel;
+extern base::Lock   s_memBitmapPixelLock;
 
 void
 Client::OnPaint(
@@ -187,46 +188,56 @@ Client::OnPaint(
 
     //DLOG(INFO) << "Client::OnPaint(" << browser << ")" << " w=" << width << ",h=" << height;
 
-#if 0
     {
-        uint32_t* p = reinterpret_cast<uint32_t*>(s_memBitmapPixel);
-        for ( int x = 0; x < 1280; ++x )
+        base::AutoLock  lock_scope(s_memBitmapPixelLock);
+
+        if ( NULL == s_memBitmapPixel )
         {
-            for ( int y = 0; y < 720; ++y )
-            {
-                p[y*1280 + x] = 0x000000ffUL;
-            }
+            return;
         }
-    }
-#endif
 
-#if 1
-    if (1 == dirtyRects.size() && dirtyRects[0] == CefRect(0, 0, 1280, 720))
-    {
-        memcpy(s_memBitmapPixel, buffer, 1280 * 720 * sizeof(uint32_t));
-    }
-    else
-    {
-        CefRenderHandler::RectList::const_iterator it =
-            dirtyRects.begin();
-
-        for ( ; it != dirtyRects.end(); ++it )
+#if 0
         {
-            const CefRect& rect = *it;
-#if 1
-            uint32_t* pMem = reinterpret_cast<uint32_t*>(s_memBitmapPixel);
-            const uint32_t* p = reinterpret_cast<const uint32_t*>(buffer);
-            for ( int x = rect.x; x < rect.x + rect.width; ++x )
+            uint32_t* p = reinterpret_cast<uint32_t*>(s_memBitmapPixel);
+            for ( int x = 0; x < 1280; ++x )
             {
-                for ( int y = rect.y; y < rect.y + rect.height; ++y )
+                for ( int y = 0; y < 720; ++y )
                 {
-                    pMem[y*1280+x] = p[y*width+x];
+                    p[y*1280 + x] = 0x000000ffUL;
                 }
             }
-#endif
         }
-    }
 #endif
+
+#if 1
+        if (1 == dirtyRects.size() && dirtyRects[0] == CefRect(0, 0, 1280, 720))
+        {
+            memcpy(s_memBitmapPixel, buffer, 1280 * 720 * sizeof(uint32_t));
+        }
+        else
+        {
+            CefRenderHandler::RectList::const_iterator it =
+                dirtyRects.begin();
+
+            for ( ; it != dirtyRects.end(); ++it )
+            {
+                const CefRect& rect = *it;
+#if 1
+                uint32_t* pMem = reinterpret_cast<uint32_t*>(s_memBitmapPixel);
+                const uint32_t* p = reinterpret_cast<const uint32_t*>(buffer);
+                for ( int x = rect.x; x < rect.x + rect.width; ++x )
+                {
+                    for ( int y = rect.y; y < rect.y + rect.height; ++y )
+                    {
+                        pMem[y*1280+x] = p[y*width+x];
+                    }
+                }
+#endif
+            }
+        }
+#endif
+    }
+
 #if defined(OS_WIN)
     {
         extern HWND s_hWnd;
