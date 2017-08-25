@@ -201,7 +201,7 @@ Client::OnPaint(
 #if 1
     if (1 == dirtyRects.size() && dirtyRects[0] == CefRect(0, 0, 1280, 720))
     {
-        memcpy(s_memBitmapPixel, buffer, 1280 * 720);
+        memcpy(s_memBitmapPixel, buffer, 1280 * 720 * sizeof(uint32_t));
     }
     else
     {
