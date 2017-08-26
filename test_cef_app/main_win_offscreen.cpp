@@ -95,6 +95,8 @@ int main_win(HINSTANCE hInstance)
     settings.multi_threaded_message_loop = true;
 #endif // defined(OS_WIN)
 
+    initClient();
+
     CefInitialize( main_args, settings, app, sandbox_info );
 
     /*
@@ -109,6 +111,8 @@ int main_win(HINSTANCE hInstance)
 int main_win_term()
 {
     CefShutdown();
+
+    termClient();
 
     return 0;
 }

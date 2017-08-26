@@ -85,6 +85,8 @@ int main_win(HINSTANCE hInstance)
         return exit_code;
     }
 
+    initClient();
+
     CefSettings         settings;
 #if !defined(CEF_USE_SANDBOX)
     settings.no_sandbox = true;
@@ -95,6 +97,8 @@ int main_win(HINSTANCE hInstance)
     CefRunMessageLoop();
 
     CefShutdown();
+
+    termClient();
 
     return 0;
 }

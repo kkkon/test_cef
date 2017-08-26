@@ -49,6 +49,36 @@ AppBrowser::OnRegisterCustomSchemes(
 #include "cef_client.h"
 #include "cef_browser_util.h"
 
+
+CefRefPtr<Client>               s_client = NULL;
+
+void
+initClient(void)
+{
+    DCHECK( NULL == s_client );
+
+    if ( NULL == s_client )
+    {
+        s_client = new Client();
+    }
+}
+
+void
+termClient(void)
+{
+    s_client = NULL;
+}
+
+
+CefRefPtr<Client>
+getClient(void)
+{
+    DCHECK( NULL != s_client );
+
+    return s_client;
+}
+
+
 namespace {
 const char kStartupURL[] = "https://www.google.com";
 //const char kStartupURL[] = "file:///resources_scheme/test.html";
@@ -59,5 +89,10 @@ AppBrowser::OnContextInitialized() //OVERRIDE
 {
     registerSchemeHandlerFactory();
 
-    createBrowser(new Client(), kStartupURL, CefBrowserSettings());
+    DLOG(INFO) << "AppBrowser::OnContextInitialized() s_client=" << s_client;
+
+    createBrowser(s_client, kStartupURL, CefBrowserSettings());
 }
+
+
+
