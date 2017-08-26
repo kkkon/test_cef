@@ -33,6 +33,10 @@
 #include <windows.h>
 #include <tchar.h>
 
+#if defined(_MSC_VER)
+#include <crtdbg.h>
+#endif // defined(_MSC_VER)
+
 #endif // defined(_WIN32)
 
 
