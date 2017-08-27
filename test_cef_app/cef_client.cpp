@@ -29,13 +29,42 @@
 #include "include/cef_app.h"
 #include "include/wrapper/cef_helpers.h"
 
+
+void
+Client::OnAfterCreated(CefRefPtr<CefBrowser> browser) //OVERRIDE
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    {
+        base::AutoLock  scoped_lock(this->mLock);
+        this->mListBrowser.push_back( browser );
+    }
+}
+
 void
 Client::OnBeforeClose(CefRefPtr<CefBrowser> browser) // OVERRIDE
 {
     CEF_REQUIRE_UI_THREAD();
 
-    // need counting
-    CefQuitMessageLoop();
+    {
+        base::AutoLock  scoped_lock(this->mLock);
+        std::list< CefRefPtr<CefBrowser> >::iterator it =
+            this->mListBrowser.begin();
+        for ( ; it != this->mListBrowser.end(); ++it )
+        {
+            CefRefPtr<CefBrowser>& rBrowser = *it;
+            if ( rBrowser->IsSame( browser ) )
+            {
+                this->mListBrowser.erase( it );
+                break;
+            }
+        }
+
+        if ( this->mListBrowser.empty() )
+        {
+            CefQuitMessageLoop();
+        }
+    }
 }
 
 void
@@ -264,3 +293,22 @@ Client::OnPaint(
 }
 
 #endif // defined(USE_CEF_OFFSCREEN)
+
+
+
+
+CefRefPtr<CefBrowser>
+Client::getBrowser()
+{
+    CefRefPtr<CefBrowser> browser;
+
+    {
+        base::AutoLock  scoped_lock(this->mLock);
+        if ( ! this->mListBrowser.empty() )
+        {
+            browser = this->mListBrowser.front();
+        }
+    }
+
+    return browser;
+}
