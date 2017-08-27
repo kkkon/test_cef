@@ -346,6 +346,35 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
 
+    //case WM_XBUTTONDOWN:
+    case WM_XBUTTONUP:
+        {
+            CefRefPtr<CefBrowser> browser = s_client->getBrowser();
+            if ( NULL != browser )
+            {
+                const DWORD fwKeys = GET_KEYSTATE_WPARAM( wParam );
+                const DWORD fwButton = GET_XBUTTON_WPARAM( wParam );
+
+                if ( fwButton & XBUTTON1 )
+                {
+                    if ( browser->CanGoBack() )
+                    {
+                        browser->GoBack();
+                    }
+                }
+                else
+                if ( browser->CanGoForward() )
+                {
+                    if ( browser->CanGoForward() )
+                    {
+                        browser->GoForward();
+                    }
+                }
+            }
+        }
+        break;
+
+
 
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
