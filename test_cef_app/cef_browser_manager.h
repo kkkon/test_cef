@@ -34,6 +34,7 @@ class BrowserManager
 {
 public:
     static BrowserManager* getInstance();
+    static void terminate();
 
 public:
     BrowserManager();
@@ -43,6 +44,8 @@ public:
     void appendBrowser( CefRefPtr<CefBrowser> browser );
     void removeBrowser( CefRefPtr<CefBrowser> browser );
 
+    bool isEmpty();
+    void closeAllBrowser( bool forceClose );
 
 private:
     base::Lock                                  mLock;

@@ -39,6 +39,7 @@ class Client
 #if defined(USE_CEF_OFFSCREEN)
     , public CefRenderHandler
 #endif // defined(USE_CEF_OFFSCREEN)
+    , public CefFocusHandler
 {
 public:
     Client() {}
@@ -136,12 +137,18 @@ public:
 
 #endif // defined(USE_CEF_OFFSCREEN)
 
-private:
-    base::Lock                                  mLock;
-    std::list< CefRefPtr<CefBrowser> >          mListBrowser;
 
-public:
-    CefRefPtr<CefBrowser> getBrowser();
+    CefRefPtr<CefFocusHandler>
+    GetFocusHandler() OVERRIDE
+    {
+        return this;
+    }
+
+    // CefFocusHandler
+    void OnGotFocus(
+        CefRefPtr<CefBrowser> browser
+        ) OVERRIDE;
+
 
 private:
     IMPLEMENT_REFCOUNTING(Client);

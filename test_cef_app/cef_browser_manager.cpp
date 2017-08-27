@@ -26,6 +26,7 @@
 
 #include "cef_browser_manager.h"
 
+#include "include/cef_app.h" // CefQuitMessageLoop
 #include "include/cef_browser.h"
 #include "include/wrapper/cef_helpers.h"
 
@@ -44,6 +45,16 @@ BrowserManager::getInstance()
     return s_clientManager;
 }
 
+//static
+void
+BrowserManager::terminate()
+{
+    s_clientManager = NULL;
+}
+
+
+
+
 BrowserManager::BrowserManager()
 {
     s_clientManager = this;
@@ -53,5 +64,99 @@ BrowserManager::~BrowserManager()
 {
     DCHECK( mListBrowser.empty() );
     s_clientManager = NULL;
+}
+
+
+void
+BrowserManager::appendBrowser( CefRefPtr<CefBrowser> browser )
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    DCHECK( s_clientManager );
+    DCHECK( this );
+
+    {
+        base::AutoLock  scoped_lock(this->mLock);
+
+        this->mListBrowser.push_back( browser );
+    }
+}
+
+
+void
+BrowserManager::removeBrowser( CefRefPtr<CefBrowser> browser )
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    DCHECK( s_clientManager );
+    DCHECK( this );
+
+    {
+        base::AutoLock  scoped_lock(this->mLock);
+
+        std::list< CefRefPtr<CefBrowser> >::iterator it =
+            this->mListBrowser.begin();
+        bool found = false;
+        for ( ; it != this->mListBrowser.end(); ++it )
+        {
+            CefRefPtr<CefBrowser>& rBrowser = *it;
+            if ( rBrowser->IsSame( browser ) )
+            {
+                this->mListBrowser.erase( it );
+                found = true;
+                break;
+            }
+        }
+        DCHECK( found );
+
+        if ( this->mListBrowser.empty() )
+        {
+            CefQuitMessageLoop();
+        }
+    }
+}
+
+bool
+BrowserManager::isEmpty()
+{
+    DCHECK( s_clientManager );
+    DCHECK( this );
+
+    bool isEmpty = false;
+    {
+        base::AutoLock  scoped_lock(this->mLock);
+
+        if ( this->mListBrowser.empty() )
+        {
+            isEmpty = true;
+        }
+    }
+
+    return isEmpty;
+}
+
+void
+BrowserManager::closeAllBrowser( bool forceClose )
+{
+    DCHECK( s_clientManager );
+    DCHECK( this );
+
+    {
+        base::AutoLock  scoped_lock(this->mLock);
+
+        std::list< CefRefPtr<CefBrowser> >::iterator it =
+            this->mListBrowser.begin();
+        bool found = false;
+        for ( ; it != this->mListBrowser.end(); ++it )
+        {
+            CefRefPtr<CefBrowser>& rBrowser = *it;
+
+            CefRefPtr<CefBrowserHost> host = rBrowser->GetHost();
+            if ( NULL != host )
+            {
+                host->CloseBrowser( forceClose );
+            }
+        }
+    }
 }
 

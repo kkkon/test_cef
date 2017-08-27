@@ -29,16 +29,34 @@
 #include "include/cef_app.h"
 #include "include/wrapper/cef_helpers.h"
 
+#include "cef_browser_manager.h"
+
+static
+CefRefPtr<CefBrowser>   s_browser;
+
+
+CefRefPtr<CefBrowser>
+getBrowser()
+{
+    return s_browser;
+}
+
+
+void
+Client::OnGotFocus(
+    CefRefPtr<CefBrowser> browser
+) //OVERRIDE
+{
+    s_browser = browser;
+}
 
 void
 Client::OnAfterCreated(CefRefPtr<CefBrowser> browser) //OVERRIDE
 {
     CEF_REQUIRE_UI_THREAD();
 
-    {
-        base::AutoLock  scoped_lock(this->mLock);
-        this->mListBrowser.push_back( browser );
-    }
+    BrowserManager::getInstance()->appendBrowser( browser );
+    s_browser = browser;
 }
 
 void
@@ -46,24 +64,11 @@ Client::OnBeforeClose(CefRefPtr<CefBrowser> browser) // OVERRIDE
 {
     CEF_REQUIRE_UI_THREAD();
 
-    {
-        base::AutoLock  scoped_lock(this->mLock);
-        std::list< CefRefPtr<CefBrowser> >::iterator it =
-            this->mListBrowser.begin();
-        for ( ; it != this->mListBrowser.end(); ++it )
-        {
-            CefRefPtr<CefBrowser>& rBrowser = *it;
-            if ( rBrowser->IsSame( browser ) )
-            {
-                this->mListBrowser.erase( it );
-                break;
-            }
-        }
+    BrowserManager::getInstance()->removeBrowser( browser );
 
-        if ( this->mListBrowser.empty() )
-        {
-            CefQuitMessageLoop();
-        }
+    if ( BrowserManager::getInstance()->isEmpty() )
+    {
+        s_browser = NULL;
     }
 }
 
@@ -295,20 +300,3 @@ Client::OnPaint(
 #endif // defined(USE_CEF_OFFSCREEN)
 
 
-
-
-CefRefPtr<CefBrowser>
-Client::getBrowser()
-{
-    CefRefPtr<CefBrowser> browser;
-
-    {
-        base::AutoLock  scoped_lock(this->mLock);
-        if ( ! this->mListBrowser.empty() )
-        {
-            browser = this->mListBrowser.front();
-        }
-    }
-
-    return browser;
-}

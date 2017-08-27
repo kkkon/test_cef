@@ -32,11 +32,3 @@ CefRefPtr<CefApp> createAppRendererProcess();
 CefRefPtr<CefApp> createAppOtherProcess();
 
 
-
-class Client;
-
-void initClient(void);
-void termClient(void);
-
-CefRefPtr<Client> getClient(void);
-
