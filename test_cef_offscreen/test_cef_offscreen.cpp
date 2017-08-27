@@ -311,6 +311,41 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
 
+    case WM_MOUSEWHEEL:
+        {
+            CefRefPtr<CefBrowser> browser = s_client->getBrowser();
+            if ( NULL != browser )
+            {
+                CefRefPtr<CefBrowserHost> host = browser->GetHost();
+                if ( NULL != host )
+                {
+                    POINT screenPoint = {
+                        GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)
+                    };
+                    HWND scrolledWnd = ::WindowFromPoint( screenPoint );
+                    if ( hWnd == scrolledWnd )
+                    {
+                        ::ScreenToClient( hWnd, &screenPoint );
+                        const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
+
+                        CefMouseEvent event;
+                        event.x = screenPoint.x;
+                        event.y = screenPoint.y;
+                        event.modifiers = 0;
+                        if ( ::GetKeyState( VK_SHIFT ) & 0x8000U )
+                        {
+                            host->SendMouseWheelEvent( event, delta, 0 );
+                        }
+                        else
+                        {
+                            host->SendMouseWheelEvent( event, 0, delta );
+                        }
+                    }
+                }
+            }
+        }
+        break;
+
 
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
