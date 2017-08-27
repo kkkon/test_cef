@@ -166,6 +166,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
+
+#include "../test_cef_app/cef_client.h"
+
+extern CefRefPtr<Client> s_client;
+
+#include <windowsx.h>
+
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     int wmId, wmEvent;
@@ -260,6 +268,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         PostQuitMessage(0);
         break;
+
+    case WM_LBUTTONDOWN:
+    case WM_LBUTTONUP:
+        {
+            CefRefPtr<CefBrowser> browser = s_client->getBrowser();
+            if ( NULL != browser )
+            {
+                CefRefPtr<CefBrowserHost> host = browser->GetHost();
+                if ( NULL != host )
+                {
+                    CefMouseEvent event;
+                    event.x = GET_X_LPARAM(lParam);
+                    event.y = GET_Y_LPARAM(lParam);
+                    event.modifiers = 0;
+                    const bool btnUp = (WM_LBUTTONUP == message)?(true):(false);
+                    host->SendMouseClickEvent( event, MBT_LEFT, btnUp, 1 );
+                }
+            }
+        }
+        break;
+
+
+
+
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
