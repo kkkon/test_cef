@@ -85,6 +85,7 @@
   <ItemGroup>
     <ClInclude Include="..\test_cef_app\cef_app_browser.h" />
     <ClInclude Include="..\test_cef_app\cef_app_factory.h" />
+    <ClInclude Include="..\test_cef_app\cef_browser_manager.h" />
     <ClInclude Include="..\test_cef_app\cef_browser_util.h" />
     <ClInclude Include="..\test_cef_app\cef_client.h" />
     <ClInclude Include="..\test_cef_app\cef_scheme_handler.h" />
@@ -96,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\test_cef_app\cef_app_browser.cpp" />
+    <ClCompile Include="..\test_cef_app\cef_browser_manager.cpp" />
     <ClCompile Include="..\test_cef_app\cef_browser_util.cpp" />
     <ClCompile Include="..\test_cef_app\cef_client.cpp" />
     <ClCompile Include="..\test_cef_app\cef_scheme_handler.cpp" />

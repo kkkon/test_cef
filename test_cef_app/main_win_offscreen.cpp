@@ -47,6 +47,12 @@
 #include "main_util.h"
 #include "cef_app_factory.h"
 
+#include "cef_scheme_handler.h"
+
+#include "cef_browser_manager.h"
+
+static
+BrowserManager* s_manager = NULL;
 
 int main_win(HINSTANCE hInstance)
 {
@@ -85,6 +91,8 @@ int main_win(HINSTANCE hInstance)
         return exit_code;
     }
 
+    s_manager = new BrowserManager();
+
     CefSettings         settings;
 #if !defined(CEF_USE_SANDBOX)
     settings.no_sandbox = true;
@@ -95,9 +103,9 @@ int main_win(HINSTANCE hInstance)
     settings.multi_threaded_message_loop = true;
 #endif // defined(OS_WIN)
 
-    initClient();
-
     CefInitialize( main_args, settings, app, sandbox_info );
+
+    registerSchemeHandlerFactory();
 
     /*
     CefRunMessageLoop();
@@ -110,9 +118,29 @@ int main_win(HINSTANCE hInstance)
 
 int main_win_term()
 {
-    CefShutdown();
+    if ( NULL != s_manager )
+    {
+        s_manager->closeAllBrowser( false );
 
-    termClient();
+        for ( int retry = 0; retry < 10; ++retry )
+        {
+            ::Sleep( 1 * 1000 );
+            if ( s_manager->isEmpty() )
+            {
+                break;
+            }
+        }
+    }
+    BrowserManager::terminate();
+
+    CefClearSchemeHandlerFactories();
+    if ( NULL != s_manager )
+    {
+        delete s_manager;
+        s_manager = NULL;
+    }
+
+    CefShutdown();
 
     return 0;
 }

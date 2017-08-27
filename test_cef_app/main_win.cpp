@@ -47,6 +47,9 @@
 #include "main_util.h"
 #include "cef_app_factory.h"
 
+#include "cef_scheme_handler.h"
+
+#include "cef_browser_manager.h"
 
 int main_win(HINSTANCE hInstance)
 {
@@ -85,7 +88,7 @@ int main_win(HINSTANCE hInstance)
         return exit_code;
     }
 
-    initClient();
+    BrowserManager  manager;
 
     CefSettings         settings;
 #if !defined(CEF_USE_SANDBOX)
@@ -94,11 +97,14 @@ int main_win(HINSTANCE hInstance)
 
     CefInitialize( main_args, settings, app, sandbox_info );
 
+    registerSchemeHandlerFactory();
+
     CefRunMessageLoop();
 
-    CefShutdown();
+    CefClearSchemeHandlerFactories();
+    BrowserManager::terminate();
 
-    termClient();
+    CefShutdown();
 
     return 0;
 }

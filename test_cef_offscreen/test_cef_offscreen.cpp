@@ -168,8 +168,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 
 #include "../test_cef_app/cef_client.h"
+#include "../test_cef_app/cef_browser_manager.h"
 
-extern CefRefPtr<Client> s_client;
+extern CefRefPtr<CefBrowser> getBrowser();
 
 #include <windowsx.h>
 
@@ -269,13 +270,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         PostQuitMessage(0);
         break;
 
+#if 0
+    case WM_CLOSE:
+        {
+            bool cancelClose = false;
+
+            BrowserManager* pManager = BrowserManager::getInstance();
+            pManager->closeAllBrowser( false );
+
+            for ( int retry = 0; retry < 3; ++retry )
+            {
+                ::Sleep( 3 * 1000 );
+                if ( pManager->isEmpty() )
+                {
+                    break;
+                }
+            }
+
+            if ( !cancelClose )
+            {
+                DestroyWindow( hWnd );
+            }
+        }
+        break;
+#endif
 
 
 
     case WM_LBUTTONDOWN:
     case WM_LBUTTONUP:
         {
-            CefRefPtr<CefBrowser> browser = s_client->getBrowser();
+            CefRefPtr<CefBrowser> browser = getBrowser();
             if ( NULL != browser )
             {
                 CefRefPtr<CefBrowserHost> host = browser->GetHost();
@@ -294,7 +319,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_MOUSEMOVE:
         {
-            CefRefPtr<CefBrowser> browser = s_client->getBrowser();
+            CefRefPtr<CefBrowser> browser = getBrowser();
             if ( NULL != browser )
             {
                 CefRefPtr<CefBrowserHost> host = browser->GetHost();
@@ -313,7 +338,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_MOUSEWHEEL:
         {
-            CefRefPtr<CefBrowser> browser = s_client->getBrowser();
+            CefRefPtr<CefBrowser> browser = getBrowser();
             if ( NULL != browser )
             {
                 CefRefPtr<CefBrowserHost> host = browser->GetHost();
@@ -349,7 +374,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     //case WM_XBUTTONDOWN:
     case WM_XBUTTONUP:
         {
-            CefRefPtr<CefBrowser> browser = s_client->getBrowser();
+            CefRefPtr<CefBrowser> browser = getBrowser();
             if ( NULL != browser )
             {
                 const DWORD fwKeys = GET_KEYSTATE_WPARAM( wParam );
@@ -377,7 +402,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_KEYDOWN:
     case WM_KEYUP:
         {
-            CefRefPtr<CefBrowser> browser = s_client->getBrowser();
+            CefRefPtr<CefBrowser> browser = getBrowser();
             if ( NULL != browser )
             {
                 bool needSendKeyEvent = true;

@@ -22,55 +22,36 @@
  * THE SOFTWARE.
  */
 
-#include "stdafx.h"
+#pragma once
 
+#include <list>
 #include "include/cef_base.h"
+#include "include/base/cef_lock.h"
 
-#include "cef_app_browser.h"
+class CefBrowser;
 
-#include "cef_scheme_handler.h"
-
-CefRefPtr<CefApp>
-createAppBrowserProcess()
+class BrowserManager
 {
-    return new AppBrowser();
-}
+public:
+    static BrowserManager* getInstance();
+    static void terminate();
 
+public:
+    BrowserManager();
+    ~BrowserManager();
 
-void
-AppBrowser::OnRegisterCustomSchemes(
-    CefRawPtr<CefSchemeRegistrar> registrar
-) // OVERRIDE
-{
-    addCustomScheme( registrar );
-}
+public:
+    void appendBrowser( CefRefPtr<CefBrowser> browser );
+    void removeBrowser( CefRefPtr<CefBrowser> browser );
 
+    bool isEmpty();
+    void closeAllBrowser( bool forceClose );
 
-#include "cef_client.h"
-#include "cef_browser_util.h"
+private:
+    base::Lock                                  mLock;
+    std::list< CefRefPtr<CefBrowser> >          mListBrowser;
 
-
-namespace {
-const char kStartupURL[] = "https://www.google.com";
-//const char kStartupURL[] = "file:///resources_scheme/test.html";
-} // namespace {
-
-void
-AppBrowser::OnContextInitialized() //OVERRIDE
-{
-    //registerSchemeHandlerFactory();
-
-    DLOG(INFO) << "AppBrowser::OnContextInitialized()";
-
-    CefRefPtr<Client> client = new Client();
-    createBrowser(client, kStartupURL, CefBrowserSettings());
-}
-
-
-void
-createNewBrowser()
-{
-    CefRefPtr<Client> client = new Client();
-    createBrowser(client, "https://www.apple.com", CefBrowserSettings());
-}
+private:
+    DISALLOW_COPY_AND_ASSIGN(BrowserManager);
+};
 
