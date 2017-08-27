@@ -269,6 +269,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         PostQuitMessage(0);
         break;
 
+
+
+
     case WM_LBUTTONDOWN:
     case WM_LBUTTONUP:
         {
@@ -289,7 +292,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
 
-
+    case WM_MOUSEMOVE:
+        {
+            CefRefPtr<CefBrowser> browser = s_client->getBrowser();
+            if ( NULL != browser )
+            {
+                CefRefPtr<CefBrowserHost> host = browser->GetHost();
+                if ( NULL != host )
+                {
+                    CefMouseEvent event;
+                    event.x = GET_X_LPARAM(lParam);
+                    event.y = GET_Y_LPARAM(lParam);
+                    event.modifiers = 0;
+                    const bool mouseLeave = false;
+                    host->SendMouseMoveEvent( event, mouseLeave );
+                }
+            }
+        }
+        break;
 
 
     default:
