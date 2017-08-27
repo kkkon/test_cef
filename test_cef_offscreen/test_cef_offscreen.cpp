@@ -408,6 +408,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     }
                 }
 
+
                 if (
                     (::GetKeyState( VK_F5 ) & 0x8000U )
                 )
@@ -419,6 +420,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     }
 
                     browser->Reload();
+                    needSendKeyEvent = false;
+                }
+
+
+                if (
+                    (::GetKeyState( 'N' ) & 0x8000U )
+                    && (::GetKeyState( VK_CONTROL ) & 0x8000U )
+                )
+                {
+                    DCHECK( needSendKeyEvent );
+                    extern void createNewBrowser();
+                    createNewBrowser();
                     needSendKeyEvent = false;
                 }
 

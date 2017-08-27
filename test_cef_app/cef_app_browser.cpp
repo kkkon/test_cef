@@ -95,4 +95,10 @@ AppBrowser::OnContextInitialized() //OVERRIDE
 }
 
 
+void
+createNewBrowser()
+{
+    CefRefPtr<Client> client = new Client();
+    createBrowser(client, "https://toyota.com", CefBrowserSettings());
+}
 

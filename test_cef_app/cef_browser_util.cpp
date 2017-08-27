@@ -145,7 +145,7 @@ void createBrowser(
     , const CefBrowserSettings& settings
     )
 {
-    CEF_REQUIRE_UI_THREAD();
+    //CEF_REQUIRE_UI_THREAD();
 
     {
         CefWindowInfo   window_info;
