@@ -374,7 +374,82 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
 
+    case WM_KEYDOWN:
+    case WM_KEYUP:
+        {
+            CefRefPtr<CefBrowser> browser = s_client->getBrowser();
+            if ( NULL != browser )
+            {
+                bool needSendKeyEvent = true;
 
+                if (
+                    (::GetKeyState( VK_RIGHT ) & 0x8000U )
+                    && (::GetKeyState( VK_CONTROL ) & 0x8000U )
+                )
+                {
+                    DCHECK( needSendKeyEvent );
+                    if ( browser->CanGoForward() )
+                    {
+                        browser->GoForward();
+                        needSendKeyEvent = false;
+                    }
+                }
+
+                if (
+                    (::GetKeyState( VK_LEFT ) & 0x8000U )
+                    && (::GetKeyState( VK_CONTROL ) & 0x8000U )
+                )
+                {
+                    DCHECK( needSendKeyEvent );
+                    if ( browser->CanGoBack() )
+                    {
+                        browser->GoBack();
+                        needSendKeyEvent = false;
+                    }
+                }
+
+                if (
+                    (::GetKeyState( VK_F5 ) & 0x8000U )
+                )
+                {
+                    DCHECK( needSendKeyEvent );
+                    if ( browser->IsLoading() )
+                    {
+                        browser->StopLoad();
+                    }
+
+                    browser->Reload();
+                    needSendKeyEvent = false;
+                }
+
+
+                if ( needSendKeyEvent )
+                {
+                    CefRefPtr<CefBrowserHost> host = browser->GetHost();
+                    if ( NULL != host )
+                    {
+                        CefKeyEvent event;
+                        event.windows_key_code = wParam;
+                        event.native_key_code = lParam;
+                        event.is_system_key = 0;
+                        event.type = (WM_KEYDOWN == message)?(KEYEVENT_RAWKEYDOWN):(KEYEVENT_KEYUP);
+                        event.modifiers = 0;
+
+                        if ( ::GetKeyState( VK_CONTROL ) & 0x8000U )
+                        {
+                            event.modifiers |= EVENTFLAG_CONTROL_DOWN;
+                        }
+                        if ( ::GetKeyState( VK_SHIFT ) & 0x8000U )
+                        {
+                            event.modifiers |= EVENTFLAG_SHIFT_DOWN;
+                        }
+
+                        host->SendKeyEvent( event );
+                    }
+                }
+            }
+        }
+        break;
 
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
