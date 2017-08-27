@@ -75,6 +75,9 @@ isUseViews(void)
 
 
 
+
+#if !defined(USE_CEF_OFFSCREEN)
+
 void createBrowser(
     CefRefPtr<CefClient> client
     , const CefString& startup_url
@@ -102,6 +105,7 @@ void createBrowser(
 #if defined(OS_WIN)
         CefWindowHandle parent = NULL;
         const CefString kName = "test_cef";
+
         window_info.SetAsPopup( parent, kName );
 
         window_info.width = 1280;
@@ -132,4 +136,40 @@ void createBrowser(
     }
 
 }
+
+#else // !defined(USE_CEF_OFFSCREEN)
+
+void createBrowser(
+    CefRefPtr<CefClient> client
+    , const CefString& startup_url
+    , const CefBrowserSettings& settings
+    )
+{
+    //CEF_REQUIRE_UI_THREAD();
+
+    {
+        CefWindowInfo   window_info;
+
+#if defined(OS_WIN)
+        CefWindowHandle parent = NULL;
+        const bool transparent = true;
+
+        window_info.SetAsWindowless( parent, transparent );
+
+        window_info.width = 1280;
+        window_info.height = 720;
+
+#endif // defined(OS_WIN)
+
+        CefRefPtr<CefRequestContext> request_context = NULL;
+
+        CefBrowserHost::CreateBrowser(
+            window_info, client, startup_url, settings, request_context
+            );
+
+    }
+
+}
+
+#endif // !defined(USE_CEF_OFFSCREEN)
 

@@ -85,20 +85,36 @@ int main_win(HINSTANCE hInstance)
         return exit_code;
     }
 
-    initClient();
-
     CefSettings         settings;
 #if !defined(CEF_USE_SANDBOX)
     settings.no_sandbox = true;
 #endif // !defined(CEF_USE_SANDBOX)
+    settings.windowless_rendering_enabled = true;
+
+#if defined(OS_WIN)
+    settings.multi_threaded_message_loop = true;
+#endif // defined(OS_WIN)
+
+    initClient();
 
     CefInitialize( main_args, settings, app, sandbox_info );
 
+    /*
     CefRunMessageLoop();
 
+    CefShutdown();
+    */
+
+    return -1;
+}
+
+int main_win_term()
+{
     CefShutdown();
 
     termClient();
 
     return 0;
 }
+
+

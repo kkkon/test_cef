@@ -22,21 +22,6 @@
  * THE SOFTWARE.
  */
 
-#pragma once
 
-#include "targetver.h"
-
-#if defined(_WIN32)
-
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX 
-#include <windows.h>
-#include <tchar.h>
-
-#if defined(_MSC_VER)
-#include <crtdbg.h>
-#endif // defined(_MSC_VER)
-
-#endif // defined(_WIN32)
-
+#include "stdafx.h"
 

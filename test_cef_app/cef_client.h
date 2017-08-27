@@ -26,12 +26,19 @@
 
 #include "include/cef_client.h"
 
+#include "include/base/cef_lock.h"
+#include <list>
+
+
 class Client
     : public CefClient
     //, public CefDisplayHandler
     , public CefLifeSpanHandler
     , public CefLoadHandler
     , public CefRequestHandler
+#if defined(USE_CEF_OFFSCREEN)
+    , public CefRenderHandler
+#endif // defined(USE_CEF_OFFSCREEN)
 {
 public:
     Client() {}
@@ -43,6 +50,7 @@ public:
     }
 
     // CefLifeSpanHandler
+    void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
     void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
 
 
@@ -101,6 +109,39 @@ public:
         , CefRefPtr<CefRequest> request
         , CefRefPtr<CefRequestCallback> callback
         ) OVERRIDE;
+
+
+#if defined(USE_CEF_OFFSCREEN)
+    CefRefPtr<CefRenderHandler>
+    GetRenderHandler() OVERRIDE
+    {
+        return this;
+    }
+
+    // CefRenderHandler
+    bool
+    GetViewRect(
+        CefRefPtr<CefBrowser> browser
+        , CefRect& rect
+        ) OVERRIDE;
+
+    void
+    OnPaint(
+        CefRefPtr<CefBrowser> browser
+        , PaintElementType type
+        , const RectList& dirtyRects
+        , const void* buffer
+        , int width, int height
+        ) OVERRIDE;
+
+#endif // defined(USE_CEF_OFFSCREEN)
+
+private:
+    base::Lock                                  mLock;
+    std::list< CefRefPtr<CefBrowser> >          mListBrowser;
+
+public:
+    CefRefPtr<CefBrowser> getBrowser();
 
 private:
     IMPLEMENT_REFCOUNTING(Client);
