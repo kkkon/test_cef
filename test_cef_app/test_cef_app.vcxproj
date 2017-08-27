@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cef_app_browser.cpp" />
+    <ClCompile Include="cef_browser_manager.cpp" />
     <ClCompile Include="cef_browser_util.cpp" />
     <ClCompile Include="cef_client.cpp" />
     <ClCompile Include="cef_scheme_handler.cpp" />
@@ -101,6 +102,7 @@
   <ItemGroup>
     <ClInclude Include="cef_app_browser.h" />
     <ClInclude Include="cef_app_factory.h" />
+    <ClInclude Include="cef_browser_manager.h" />
     <ClInclude Include="cef_browser_util.h" />
     <ClInclude Include="cef_client.h" />
     <ClInclude Include="cef_scheme_handler.h" />

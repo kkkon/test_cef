@@ -48,6 +48,9 @@
     <ClInclude Include="..\test_cef_app\main_util.h">
       <Filter>cef</Filter>
     </ClInclude>
+    <ClInclude Include="..\test_cef_app\cef_browser_manager.h">
+      <Filter>cef</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -72,6 +75,9 @@
       <Filter>cef</Filter>
     </ClCompile>
     <ClCompile Include="..\test_cef_app\main_win_offscreen.cpp">
+      <Filter>cef</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test_cef_app\cef_browser_manager.cpp">
       <Filter>cef</Filter>
     </ClCompile>
   </ItemGroup>
